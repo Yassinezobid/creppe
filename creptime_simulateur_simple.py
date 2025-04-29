@@ -43,7 +43,8 @@ with st.sidebar:
     episodes_sans_changement = st.number_input("Épisodes consécutifs stables", 1, 20, 2)
 
 # --- Slider pour nombre d'épisodes ---
-
+st.header("🎯 Nombre d'épisodes d'apprentissage")
+n_episodes = st.slider("Choisissez le nombre d'épisodes", 10, 5000, 1000, step=10)
 
 # --- Fonction d'apprentissage Q-Learning ---
 def q_learning(n_episodes):
@@ -137,9 +138,6 @@ politique_df = pd.DataFrame(politique, index=[f"Ligne {i+1}" for i in range(n_ro
 styled_politique = politique_df.style.set_properties(**{'text-align': 'center', 'font-size': '24px'})
 
 st.dataframe(styled_politique, use_container_width=True, height=int(n_rows * 70))
-
-st.header("🎯 Nombre d'épisodes d'apprentissage")
-n_episodes = st.slider("Choisissez le nombre d'épisodes", 10, 5000, 1000, step=10)
 
 # Courbe d'apprentissage
 st.subheader("Évolution des Récompenses")

@@ -1,7 +1,7 @@
 import streamlit as st
 import numpy as np
 import matplotlib.pyplot as plt
-import pandas as pd  
+import pandas as pd
 
 # Configuration de la page
 st.set_page_config(page_title="Simulateur Q-Learning", layout="wide")
@@ -108,29 +108,33 @@ st.header("📊 Résultats de l'apprentissage")
 
 # Affichage Q-Table
 st.subheader("Q-Table (Valeurs maximales par état)")
-q_values = np.round(np.max(Q, axis=2), 2)
-q_df = pd.DataFrame(q_values, index=[f"Ligne {i+1}" for i in range(n_rows)], columns=[f"Colonne {j+1}" for j in range(n_cols)])
 
-# Marquer l'état final en rouge
-def highlight_goal(val, row, col):
-    if (row, col) == etat_final:
+q_values = np.round(np.max(Q, axis=2), 2)
+q_df = pd.DataFrame(q_values, index=[f"Ligne {i+1}" for i in range(n_rows)],
+                    columns=[f"Colonne {j+1}" for j in range(n_cols)])
+
+# Fonction pour colorier la case de l'état final
+def highlight_goal(val):
+    if val == q_values[etat_final[0], etat_final[1]]:
         return 'background-color: lightcoral'
     return ''
 
-styled_q = q_df.style.format(precision=2).apply(lambda x: [highlight_goal(v, i, j) for j, v in enumerate(x)], axis=1, result_type='expand')\
+styled_q = q_df.style.format(precision=2).applymap(highlight_goal)\
     .set_properties(**{'text-align': 'center', 'font-size': '20px'})
 
 st.dataframe(styled_q, use_container_width=True, height=int(n_rows * 70))
 
 # Politique déduite
 st.subheader("Politique Déduite (Meilleure Action)")
+
 actions = ['↑', '↓', '←', '→']
 politique = np.empty((n_rows, n_cols), dtype=object)
 for i in range(n_rows):
     for j in range(n_cols):
         politique[i, j] = actions[np.argmax(Q[i, j])]
 
-politique_df = pd.DataFrame(politique, index=[f"Ligne {i+1}" for i in range(n_rows)], columns=[f"Colonne {j+1}" for j in range(n_cols)])
+politique_df = pd.DataFrame(politique, index=[f"Ligne {i+1}" for i in range(n_rows)],
+                            columns=[f"Colonne {j+1}" for j in range(n_cols)])
 styled_politique = politique_df.style.set_properties(**{'text-align': 'center', 'font-size': '24px'})
 
 st.dataframe(styled_politique, use_container_width=True, height=int(n_rows * 70))
